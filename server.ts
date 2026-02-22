@@ -30,6 +30,19 @@ async function startServer() {
     res.json({ url: data.url });
   });
 
+  app.get("/api/auth/github/url", async (req, res) => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${process.env.APP_URL}/auth/callback`,
+        skipBrowserRedirect: true
+      }
+    });
+    
+    if (error) return res.status(500).json({ error: error.message });
+    res.json({ url: data.url });
+  });
+
   app.get("/auth/callback", async (req, res) => {
     // Supabase handles the session via query params/hash usually.
     // We just need to notify the opener and close.
